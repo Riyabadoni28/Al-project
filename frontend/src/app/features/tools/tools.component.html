@@ -1,0 +1,258 @@
+<div class="tools-page">
+  <div class="page-header">
+    <div>
+      <h1>
+        <mat-icon class="header-icon">build_circle</mat-icon>
+        AI Agentic Career Tools
+      </h1>
+      <p>Autonomous AI agents to optimize your resume bullets, draft cover letters, and evaluate interview practice.</p>
+    </div>
+  </div>
+
+  <mat-tab-group class="custom-tabs" animationDuration="200ms">
+
+    <!-- Tab 1: STAR Resume Bullet Optimizer -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">auto_fix_high</mat-icon>
+        <span>STAR Bullet Optimizer</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <mat-card class="tool-card">
+          <mat-card-header>
+            <mat-card-title>Transform Bullets into Metrics-Driven Achievements</mat-card-title>
+            <mat-card-subtitle>Paste any weak or generic bullet point to re-engineer it into STAR format.</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="tool-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Original Resume Bullet Point</mat-label>
+              <textarea
+                matInput
+                [(ngModel)]="bulletInput"
+                rows="3"
+                placeholder="e.g. Responsible for developing API endpoints and fixing bugs in the frontend application."
+              ></textarea>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Target Role (Optional)</mat-label>
+                <input matInput [(ngModel)]="bulletRole" placeholder="e.g. Senior Frontend Engineer" />
+              </mat-form-field>
+
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn"
+                (click)="runBulletOptimization()"
+                [disabled]="!bulletInput.trim() || isBulletLoading"
+              >
+                <mat-icon>{{ isBulletLoading ? 'hourglass_top' : 'bolt' }}</mat-icon>
+                {{ isBulletLoading ? 'Optimizing...' : 'Optimize Bullet' }}
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Loading -->
+        <div *ngIf="isBulletLoading" class="tool-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <span>AI Agent analyzing action verbs & STAR impact metrics...</span>
+        </div>
+
+        <!-- Bullet Results -->
+        <div *ngIf="!isBulletLoading && bulletResult" class="results-container">
+          <div class="impact-badge-header">
+            <span class="score-chip">Impact Score: <strong>{{ bulletResult.impactScore }}/100</strong></span>
+            <span class="kw-label">Added Keywords:</span>
+            <mat-chip-set>
+              <mat-chip *ngFor="let kw of bulletResult.keyKeywordsAdded" class="kw-chip">{{ kw }}</mat-chip>
+            </mat-chip-set>
+          </div>
+
+          <div class="bullets-list">
+            <div *ngFor="let bullet of bulletResult.improvedBullets; let i = index" class="bullet-item">
+              <div class="bullet-num">{{ i + 1 }}</div>
+              <p class="bullet-text">{{ bullet }}</p>
+              <button mat-icon-button (click)="copyText(bullet)" matTooltip="Copy Bullet">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tab 2: Tailored Cover Letter Generator -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">mark_email_unread</mat-icon>
+        <span>Cover Letter Generator</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <mat-card class="tool-card">
+          <mat-card-header>
+            <mat-card-title>Instant AI Cover Letter</mat-card-title>
+            <mat-card-subtitle>Generate a personalized, job-matched cover letter grounded in your uploaded resume.</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="tool-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Target Company</mat-label>
+                <input matInput [(ngModel)]="coverCompany" placeholder="e.g. Stripe, TechCorp" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Job Title</mat-label>
+                <input matInput [(ngModel)]="coverRole" placeholder="e.g. Full Stack Developer" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Tone</mat-label>
+                <mat-select [(ngModel)]="coverTone">
+                  <mat-option value="professional">Professional & Formal</mat-option>
+                  <mat-option value="enthusiastic">Enthusiastic & Energetic</mat-option>
+                  <mat-option value="concise">Concise & Direct</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <button
+              mat-raised-button
+              color="primary"
+              class="action-btn"
+              (click)="runCoverLetterGeneration()"
+              [disabled]="isCoverLoading"
+            >
+              <mat-icon>{{ isCoverLoading ? 'hourglass_top' : 'edit_document' }}</mat-icon>
+              {{ isCoverLoading ? 'Drafting...' : 'Generate Cover Letter' }}
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Loading -->
+        <div *ngIf="isCoverLoading" class="tool-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <span>AI Agent matching resume strengths with company context...</span>
+        </div>
+
+        <!-- Cover Letter Results -->
+        <mat-card *ngIf="!isCoverLoading && coverResult" class="cover-result-card">
+          <mat-card-header class="cover-header">
+            <div>
+              <mat-card-title>{{ coverResult.subjectLine }}</mat-card-title>
+              <mat-card-subtitle>Target: {{ coverResult.company }} • {{ coverResult.role }}</mat-card-subtitle>
+            </div>
+            <button mat-raised-button color="accent" (click)="copyText(coverResult.coverLetterText)">
+              <mat-icon>content_copy</mat-icon> Copy Full Letter
+            </button>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="highlights-box">
+              <strong>Key Highlights Matched:</strong>
+              <ul>
+                <li *ngFor="let h of coverResult.matchHighlights">{{ h }}</li>
+              </ul>
+            </div>
+            <pre class="letter-body">{{ coverResult.coverLetterText }}</pre>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Tab 3: Interactive Interview Evaluator -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">rate_review</mat-icon>
+        <span>Interview Answer Evaluator</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <mat-card class="tool-card">
+          <mat-card-header>
+            <mat-card-title>Get Real-time AI Grading on Your Practice Answers</mat-card-title>
+            <mat-card-subtitle>Type your spoken response to test your interview readiness.</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="tool-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Interview Question</mat-label>
+              <input matInput [(ngModel)]="evalQuestion" placeholder="e.g. Tell me about a time you optimized a slow API endpoint." />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Your Answer</mat-label>
+              <textarea
+                matInput
+                [(ngModel)]="evalAnswer"
+                rows="4"
+                placeholder="e.g. I identified that our SQL query had no index, so I added a composite index and implemented Redis caching, reducing load time from 3s to 200ms."
+              ></textarea>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              color="primary"
+              class="action-btn"
+              (click)="runAnswerEvaluation()"
+              [disabled]="!evalQuestion.trim() || !evalAnswer.trim() || isEvalLoading"
+            >
+              <mat-icon>{{ isEvalLoading ? 'hourglass_top' : 'grade' }}</mat-icon>
+              {{ isEvalLoading ? 'Evaluating...' : 'Evaluate Answer' }}
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Loading -->
+        <div *ngIf="isEvalLoading" class="tool-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <span>AI Senior Interviewer grading technical depth & STAR structure...</span>
+        </div>
+
+        <!-- Eval Results -->
+        <div *ngIf="!isEvalLoading && evalResult" class="eval-result-container">
+          <mat-card class="eval-score-card">
+            <div class="score-badge" [ngClass]="evalResult.score >= 7 ? 'good' : 'bad'">
+              <span class="score-num">{{ evalResult.score }}/10</span>
+              <span class="score-txt">{{ evalResult.grade }}</span>
+            </div>
+
+            <div class="eval-details">
+              <div class="eval-block">
+                <h4><mat-icon color="primary">add_circle</mat-icon> Strengths</h4>
+                <ul>
+                  <li *ngFor="let s of evalResult.strengths">{{ s }}</li>
+                </ul>
+              </div>
+
+              <div class="eval-block">
+                <h4><mat-icon color="warn">warning</mat-icon> Areas to Improve</h4>
+                <ul>
+                  <li *ngFor="let imp of evalResult.improvements">{{ imp }}</li>
+                </ul>
+              </div>
+
+              <div class="eval-block">
+                <h4><mat-icon class="purple-icon">auto_awesome</mat-icon> Recommended Refined Answer</h4>
+                <p class="refined-box">{{ evalResult.refinedAnswer }}</p>
+              </div>
+
+              <div *ngIf="evalResult.followUpQuestion" class="follow-up-box">
+                <mat-icon>help_outline</mat-icon>
+                <div>
+                  <strong>Likely Follow-Up Question:</strong>
+                  <p>"{{ evalResult.followUpQuestion }}"</p>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

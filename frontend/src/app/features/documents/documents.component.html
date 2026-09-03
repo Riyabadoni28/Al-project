@@ -1,0 +1,135 @@
+<div class="documents-page">
+  <div class="page-header">
+    <h1>Document Management</h1>
+    <p>Upload your Resume (PDF) and Job Description to enable AI career analysis & RAG.</p>
+  </div>
+
+  <div class="upload-grid">
+    <!-- Resume Upload Section -->
+    <mat-card class="upload-card">
+      <mat-card-header>
+        <mat-icon color="primary" class="header-icon">badge</mat-icon>
+        <mat-card-title>1. Upload Resume (PDF)</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngIf="isUploadingResume" class="progress-box">
+          <p>Parsing PDF & Extracting Text...</p>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+
+        <!-- Upload Area if No Resume -->
+        <div
+          *ngIf="!documents?.resume && !isUploadingResume"
+          class="dropzone"
+          (click)="resumeFileInput.click()"
+        >
+          <mat-icon class="drop-icon">cloud_upload</mat-icon>
+          <h3>Click or Drag & Drop Resume PDF</h3>
+          <p class="drop-hint">Supports PDF files up to 10MB</p>
+          <input
+            #resumeFileInput
+            type="file"
+            accept="application/pdf"
+            (change)="onResumeFileSelected($event)"
+            style="display: none;"
+          />
+        </div>
+
+        <!-- Uploaded Resume Details -->
+        <div *ngIf="documents?.resume" class="uploaded-doc-box">
+          <div class="doc-header">
+            <mat-icon class="pdf-icon">picture_as_pdf</mat-icon>
+            <div class="doc-meta">
+              <h4>{{ documents?.resume?.filename }}</h4>
+              <span>{{ (documents?.resume?.fileSize || 0) / 1024 | number: '1.0-1' }} KB • {{ documents?.resume?.pageCount }} Pages • {{ documents?.resume?.charCount }} Characters</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="removeDocument('resume')" matTooltip="Remove Resume">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+
+          <div class="preview-box">
+            <span class="preview-label">EXTRACTED TEXT PREVIEW:</span>
+            <p class="preview-text">{{ documents?.resume?.preview }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Job Description Section -->
+    <mat-card class="upload-card">
+      <mat-card-header>
+        <mat-icon color="accent" class="header-icon">work_outline</mat-icon>
+        <mat-card-title>2. Job Description</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngIf="isUploadingJd" class="progress-box">
+          <p>Processing Job Description...</p>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+
+        <mat-tab-group *ngIf="!documents?.jobDescription && !isUploadingJd">
+          <!-- Tab 1: Upload PDF -->
+          <mat-tab label="Upload PDF">
+            <div class="dropzone tab-dropzone" (click)="jdFileInput.click()">
+              <mat-icon class="drop-icon accent-icon">picture_as_pdf</mat-icon>
+              <h3>Click to Upload Job Description PDF</h3>
+              <p class="drop-hint">Supports PDF up to 10MB</p>
+              <input
+                #jdFileInput
+                type="file"
+                accept="application/pdf"
+                (change)="onJdFileSelected($event)"
+                style="display: none;"
+              />
+            </div>
+          </mat-tab>
+
+          <!-- Tab 2: Paste Plain Text -->
+          <mat-tab label="Paste Plain Text">
+            <div class="text-input-box">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Job Description Text</mat-label>
+                <textarea
+                  matInput
+                  [(ngModel)]="plainTextJd"
+                  rows="6"
+                  placeholder="Paste requirement responsibilities, technologies, and qualifications..."
+                ></textarea>
+              </mat-form-field>
+              <button
+                mat-raised-button
+                color="accent"
+                [disabled]="!plainTextJd || plainTextJd.length < 20"
+                (click)="submitPlainTextJd()"
+              >
+                Save Job Description
+              </button>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+        <!-- Uploaded JD Details -->
+        <div *ngIf="documents?.jobDescription" class="uploaded-doc-box">
+          <div class="doc-header">
+            <mat-icon class="jd-icon">description</mat-icon>
+            <div class="doc-meta">
+              <h4>{{ documents?.jobDescription?.filename }}</h4>
+              <span>{{ (documents?.jobDescription?.fileSize || 0) / 1024 | number: '1.0-1' }} KB • {{ documents?.jobDescription?.charCount }} Characters</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="removeDocument('job_description')" matTooltip="Remove Job Description">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+
+          <div class="preview-box">
+            <span class="preview-label">EXTRACTED REQUIREMENTS PREVIEW:</span>
+            <p class="preview-text">{{ documents?.jobDescription?.preview }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

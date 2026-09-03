@@ -1,0 +1,145 @@
+<div class="chat-page">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div>
+      <h1>
+        <mat-icon class="header-icon">auto_awesome</mat-icon>
+        AI Career Assistant Chat
+      </h1>
+      <p>Ask grounded questions about your resume match, skills, and interview readiness.</p>
+    </div>
+    <div class="header-actions">
+      <span class="model-badge" [ngClass]="useStreaming ? 'badge-stream' : 'badge-std'">
+        <mat-icon class="badge-icon">{{ useStreaming ? 'stream' : 'chat' }}</mat-icon>
+        {{ useStreaming ? 'SSE Streaming' : 'Standard Mode' }}
+      </span>
+      <button mat-icon-button (click)="toggleStreaming()" matTooltip="{{ useStreaming ? 'Switch to Standard' : 'Switch to Streaming' }}">
+        <mat-icon>{{ useStreaming ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+      </button>
+      <button mat-stroked-button (click)="clearChat()" class="clear-btn">
+        <mat-icon>delete_sweep</mat-icon> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Preset Prompt Chips -->
+  <div class="preset-prompts">
+    <button
+      *ngFor="let p of presetPrompts"
+      class="prompt-chip"
+      (click)="sendPresetPrompt(p.text)"
+      [disabled]="isLoading"
+    >
+      <mat-icon class="chip-icon">{{ p.icon }}</mat-icon>
+      <span>{{ p.text }}</span>
+    </button>
+  </div>
+
+  <!-- Messages Thread Box -->
+  <div class="messages-container" #messagesContainer>
+    <div *ngIf="messages.length === 0" class="empty-chat-state">
+      <div class="empty-orb">
+        <mat-icon class="empty-icon">forum</mat-icon>
+      </div>
+      <h3>Start a conversation with AI Career Assistant</h3>
+      <p>Click a suggested prompt above or type your question below.</p>
+    </div>
+
+    <div
+      *ngFor="let msg of messages; let i = index"
+      class="message-wrapper"
+      [ngClass]="msg.sender === 'user' ? 'user-align' : 'ai-align'"
+    >
+      <div class="avatar" [ngClass]="msg.sender">
+        <mat-icon>{{ msg.sender === 'user' ? 'person' : 'auto_awesome' }}</mat-icon>
+      </div>
+
+      <div class="message-bubble" [ngClass]="msg.sender">
+        <div class="bubble-header">
+          <span class="sender-name">{{ msg.sender === 'user' ? 'You' : 'AI Assistant' }}</span>
+          <div class="bubble-meta">
+            <span *ngIf="msg.modelUsed" class="model-tag">{{ msg.modelUsed }}</span>
+            <span class="time">{{ msg.timestamp }}</span>
+          </div>
+        </div>
+
+        <!-- Message Markdown Content -->
+        <div class="markdown-body" [innerHTML]="formatMarkdown(msg.text)"></div>
+
+        <!-- Streaming cursor -->
+        <span *ngIf="msg.streaming" class="stream-cursor"></span>
+
+        <!-- RAG Sources Accordion -->
+        <div *ngIf="msg.sources && msg.sources.length > 0 && !msg.streaming" class="sources-accordion">
+          <mat-expansion-panel class="sources-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="source-icon">find_in_page</mat-icon>
+                <span>Grounded Sources ({{ msg.sources.length }})</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div *ngFor="let src of msg.sources" class="source-item">
+              <div class="source-title">
+                <mat-icon>description</mat-icon>
+                <strong>{{ src.document }}</strong>
+                <span *ngIf="src.page"> (Page {{ src.page }})</span>
+              </div>
+              <p class="source-snippet">"{{ src.snippet }}"</p>
+            </div>
+          </mat-expansion-panel>
+        </div>
+
+        <!-- Actions Row -->
+        <div *ngIf="msg.sender === 'ai' && !msg.streaming" class="bubble-actions">
+          <button mat-icon-button (click)="copyText(msg.text)" matTooltip="Copy Response">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button mat-icon-button (click)="sendPresetPrompt('Tell me more about this')" matTooltip="Follow Up">
+            <mat-icon>reply</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thinking / Loading Indicator (non-streaming) -->
+    <div *ngIf="isLoading && !useStreaming" class="message-wrapper ai-align">
+      <div class="avatar ai">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <div class="message-bubble ai loading-bubble">
+        <div class="typing-indicator">
+          <div class="dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="thinking-text">Thinking & retrieving context...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Box -->
+  <div class="input-container">
+    <mat-form-field appearance="outline" class="chat-input-field">
+      <mat-label>Ask a career question...</mat-label>
+      <input
+        matInput
+        [(ngModel)]="userInput"
+        (keyup.enter)="sendMessage()"
+        placeholder="Am I a strong fit for this job? What skills am I missing?"
+        [disabled]="isLoading"
+      />
+      <mat-hint>{{ useStreaming ? '⚡ SSE Streaming enabled' : '💬 Standard response mode' }}</mat-hint>
+      <button
+        mat-icon-button
+        matSuffix
+        color="primary"
+        (click)="sendMessage()"
+        [disabled]="!userInput.trim() || isLoading"
+        matTooltip="Send Message"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+</div>

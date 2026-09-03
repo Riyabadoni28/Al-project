@@ -1,0 +1,273 @@
+<div class="dashboard-page">
+  <!-- Welcome Header Banner -->
+  <div class="welcome-banner glass-panel">
+    <div class="banner-text">
+      <h1>Hi, User 👋</h1>
+      <p>Your AI Career Assistant platform is active. Connect your resume and job specs for AI analysis.</p>
+    </div>
+    <div class="banner-actions">
+      <button mat-raised-button color="primary" routerLink="/documents">
+        <mat-icon>cloud_upload</mat-icon> Upload Resume
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Stats Cards Grid -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content class="stat-content">
+        <div class="stat-icon-wrapper bg-indigo">
+          <mat-icon class="stat-icon">description</mat-icon>
+        </div>
+        <div class="stat-details">
+          <span class="stat-value">{{ dashboardData?.stats?.resumesUploaded || 0 }}</span>
+          <span class="stat-label">Resumes Indexed</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content class="stat-content">
+        <div class="stat-icon-wrapper bg-cyan">
+          <mat-icon class="stat-icon">work_outline</mat-icon>
+        </div>
+        <div class="stat-details">
+          <span class="stat-value">{{ dashboardData?.stats?.jobDescriptionsUploaded || 0 }}</span>
+          <span class="stat-label">Job Descriptions</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card highlight-ats-card">
+      <mat-card-content class="stat-content">
+        <div class="stat-icon-wrapper bg-emerald">
+          <mat-icon class="stat-icon">fact_check</mat-icon>
+        </div>
+        <div class="stat-details">
+          <span class="stat-value text-emerald">
+            {{ atsData?.overallAtsScore !== undefined ? atsData?.overallAtsScore + '%' : 'Scan Ready' }}
+          </span>
+          <span class="stat-label">ATS Compliance Score</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content class="stat-content">
+        <div class="stat-icon-wrapper bg-purple">
+          <mat-icon class="stat-icon">record_voice_over</mat-icon>
+        </div>
+        <div class="stat-details">
+          <span class="stat-value">{{ dashboardData?.stats?.interviewSessions || 0 }}</span>
+          <span class="stat-label">Mock Interviews</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- 🎯 ATS Score Checker Widget -->
+  <mat-card class="ats-checker-card">
+    <mat-card-header>
+      <div class="ats-header-title">
+        <mat-icon class="ats-icon">fact_check</mat-icon>
+        <div>
+          <mat-card-title>ATS Resume Compatibility Checker</mat-card-title>
+          <mat-card-subtitle>Applicant Tracking System parsing, keyword density & formatting scan</mat-card-subtitle>
+        </div>
+      </div>
+      <button mat-stroked-button color="primary" class="rescan-btn" (click)="loadDashboardData()"
+        [disabled]="isScanning">
+        <mat-icon>{{ isScanning ? 'hourglass_top' : 'autorenew' }}</mat-icon>
+        {{ isScanning ? 'Scanning...' : 'Re-Scan ATS' }}
+      </button>
+    </mat-card-header>
+
+    <mat-card-content class="ats-content">
+      <!-- Un-scanned State -->
+      <div *ngIf="atsData && !atsData.isComplete" class="ats-empty-state">
+        <mat-icon class="warn-icon">upload_file</mat-icon>
+        <div>
+          <h4>Resume Required for ATS Scoring</h4>
+          <p>{{ atsData.message }}</p>
+        </div>
+        <button mat-raised-button color="primary" routerLink="/documents">
+          <mat-icon>cloud_upload</mat-icon> Upload Resume
+        </button>
+      </div>
+
+      <!-- ATS Score Dashboard Display -->
+      <div *ngIf="atsData && atsData.isComplete" class="ats-dashboard-grid">
+        <!-- Left Score Ring -->
+        <div class="ats-score-display">
+          <div class="ats-gauge" [ngClass]="getScoreClass(atsData.overallAtsScore)">
+            <div class="gauge-center">
+              <span class="gauge-score">{{ atsData.overallAtsScore }}%</span>
+              <span class="gauge-lbl">ATS SCORE</span>
+            </div>
+          </div>
+          <div class="ats-status-text">
+            <h3>{{ getScoreGrade(atsData.overallAtsScore) }}</h3>
+            <p>Based on ATS parsing filters, layout compliance & keyword frequency.</p>
+          </div>
+        </div>
+
+        <!-- Middle Sub-Scores Breakdown -->
+        <div class="ats-subscores">
+          <div class="subscore-item">
+            <div class="sub-header">
+              <span>🎯 Keyword Match</span>
+              <strong>{{ atsData.keywordMatchScore }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="atsData.keywordMatchScore"
+              class="bar-indigo"></mat-progress-bar>
+          </div>
+
+          <div class="subscore-item">
+            <div class="sub-header">
+              <span>📝 Layout & Formatting</span>
+              <strong>{{ atsData.formattingScore }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="atsData.formattingScore"
+              class="bar-emerald"></mat-progress-bar>
+          </div>
+
+          <div class="subscore-item">
+            <div class="sub-header">
+              <span>⚡ Action Verbs Density</span>
+              <strong>{{ atsData.actionVerbsScore }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="atsData.actionVerbsScore" class="bar-cyan"></mat-progress-bar>
+          </div>
+
+          <div class="subscore-item">
+            <div class="sub-header">
+              <span>📖 Readability & Length</span>
+              <strong>{{ atsData.readabilityScore }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="atsData.readabilityScore"
+              class="bar-purple"></mat-progress-bar>
+          </div>
+        </div>
+
+        <!-- Right ATS Checklist -->
+        <div class="ats-checks-list">
+          <h4><mat-icon class="check-title-icon">fact_check</mat-icon> ATS Compliance Checklist</h4>
+          <div *ngFor="let check of atsData.checks" class="check-item" [ngClass]="check.passed ? 'passed' : 'failed'">
+            <mat-icon class="check-status-icon">{{ check.passed ? 'check_circle' : 'warning' }}</mat-icon>
+            <div class="check-info">
+              <strong>{{ check.title }}</strong>
+              <p>{{ check.details }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATS Improvement Recommendations -->
+      <div *ngIf="atsData && atsData.improvementTips?.length" class="ats-tips-box">
+        <div class="tips-header">
+          <mat-icon class="tip-icon">lightbulb</mat-icon>
+          <strong>ATS Optimization Tips:</strong>
+        </div>
+        <ul>
+          <li *ngFor="let tip of atsData.improvementTips">{{ tip }}</li>
+        </ul>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Architecture & System Status Overview -->
+  <div class="dashboard-sections">
+    <!-- Left Section: Architecture Phase Roadmap -->
+    <mat-card class="architecture-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="primary">hub</mat-icon> Architecture & Phase Roadmap
+        </mat-card-title>
+        <mat-card-subtitle>All Phases Completed & Active</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="phase-list">
+          <div *ngFor="let phase of dashboardData?.phases" class="phase-item" [ngClass]="'phase-' + phase.status">
+            <div class="phase-number">Phase {{ phase.id }}</div>
+            <div class="phase-info">
+              <strong>{{ phase.name }}</strong>
+              <p>{{ phase.description }}</p>
+            </div>
+            <span class="badge-tag badge-success">
+              ✅ Completed
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Right Column: Health + System Status -->
+    <div class="right-column">
+      <!-- Backend Health Card -->
+      <mat-card class="system-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon color="accent">dns</mat-icon> Backend Health
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="system-content">
+          <div class="health-indicator-box">
+            <div class="indicator-header">
+              <span>Node.js / Express API</span>
+              <span class="status-badge" [ngClass]="healthData ? 'status-online' : 'status-offline'">
+                {{ healthData ? '● ONLINE' : '● CHECKING...' }}
+              </span>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="healthData ? 100 : 30"></mat-progress-bar>
+          </div>
+
+          <div class="metrics-list" *ngIf="healthData">
+            <div class="metric-row">
+              <span class="metric-label">API Service:</span>
+              <span class="metric-val">{{ healthData.service }}</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Port:</span>
+              <span class="metric-val">8500</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Uptime:</span>
+              <span class="metric-val">{{ (healthData.system.uptime || 0) | number:'1.0-1' }}s</span>
+            </div>
+          </div>
+
+          <button mat-stroked-button color="primary" class="refresh-btn" (click)="loadDashboardData()">
+            <mat-icon>refresh</mat-icon> Refresh Status
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- System Capabilities Card -->
+      <mat-card class="capabilities-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>memory</mat-icon> System Capabilities
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="capability-list" *ngIf="dashboardData?.systemStatus">
+            <div class="cap-item">
+              <mat-icon class="cap-icon ok">smart_toy</mat-icon>
+              <span>{{ dashboardData?.systemStatus?.llmService }}</span>
+            </div>
+            <div class="cap-item">
+              <mat-icon class="cap-icon ok">hub</mat-icon>
+              <span>{{ dashboardData?.systemStatus?.ragPipeline }}</span>
+            </div>
+            <div class="cap-item">
+              <mat-icon class="cap-icon ok">stream</mat-icon>
+              <span>{{ dashboardData?.systemStatus?.streaming }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

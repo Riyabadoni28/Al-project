@@ -1,0 +1,153 @@
+<div class="analysis-page">
+  <div class="page-header">
+    <div>
+      <h1>
+        <mat-icon class="header-icon">analytics</mat-icon>
+        AI Job-Fit Analysis
+      </h1>
+      <p>AI-powered match analysis generated from your uploaded Resume and Job Description.</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="runAnalysis()" [disabled]="isLoading">
+      <mat-icon>{{ isLoading ? 'hourglass_top' : 'auto_awesome' }}</mat-icon>
+      {{ isLoading ? 'Analyzing...' : 'Re-run AI Analysis' }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner diameter="48"></mat-spinner>
+    <h3>Running AI Job-Fit Analysis...</h3>
+    <p>Comparing your resume against the job description using AI...</p>
+  </div>
+
+  <!-- Incomplete State (Documents Missing) -->
+  <mat-card *ngIf="!isLoading && analysisData && !analysisData.isComplete" class="warning-card">
+    <mat-card-content class="warning-content">
+      <mat-icon class="warning-icon">upload_file</mat-icon>
+      <div>
+        <h3>Documents Required</h3>
+        <p>{{ analysisData.message }}</p>
+        <div class="doc-status-row">
+          <span class="doc-badge" [ngClass]="analysisData.resumeUploaded ? 'ok' : 'missing'">
+            <mat-icon>{{ analysisData.resumeUploaded ? 'check_circle' : 'cancel' }}</mat-icon>
+            Resume
+          </span>
+          <span class="doc-badge" [ngClass]="analysisData.jobDescriptionUploaded ? 'ok' : 'missing'">
+            <mat-icon>{{ analysisData.jobDescriptionUploaded ? 'check_circle' : 'cancel' }}</mat-icon>
+            Job Description
+          </span>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" routerLink="/documents">
+        <mat-icon>cloud_upload</mat-icon> Upload Documents
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Complete Analysis Results -->
+  <div *ngIf="!isLoading && analysisData && analysisData.isComplete" class="analysis-container">
+
+    <!-- Overall Match Score Card -->
+    <mat-card class="score-card">
+      <mat-card-content class="score-content">
+        <div class="score-gauge" [ngClass]="getScoreClass(analysisData.overallMatch)">
+          <div class="gauge-inner">
+            <span class="score-val">{{ analysisData.overallMatch }}%</span>
+            <span class="score-label">MATCH SCORE</span>
+          </div>
+        </div>
+
+        <div class="score-details">
+          <h2>{{ analysisData.matchGrade }}</h2>
+          <p>AI analysis based on your resume and target job description. Higher score indicates stronger alignment.</p>
+          <div class="score-bar-wrapper">
+            <mat-progress-bar mode="determinate" [value]="analysisData.overallMatch || 0" class="score-bar"></mat-progress-bar>
+            <div class="score-markers">
+              <span>0%</span><span>50%</span><span>100%</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Skills Grid -->
+    <div class="analysis-grid">
+      <!-- Matching Skills -->
+      <mat-card class="grid-card">
+        <mat-card-header>
+          <div class="card-icon-header success">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <mat-card-title>Matching Skills & Strengths</mat-card-title>
+          <mat-card-subtitle>{{ analysisData.matchingSkills?.length || 0 }} skills aligned</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-chip-set>
+            <mat-chip *ngFor="let skill of analysisData.matchingSkills" class="chip-success">
+              <mat-icon matChipAvatar>done</mat-icon> {{ skill }}
+            </mat-chip>
+          </mat-chip-set>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Missing Skills -->
+      <mat-card class="grid-card">
+        <mat-card-header>
+          <div class="card-icon-header warning">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <mat-card-title>Skill Gaps to Address</mat-card-title>
+          <mat-card-subtitle>{{ analysisData.missingSkills?.length || 0 }} gaps identified</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-chip-set>
+            <mat-chip *ngFor="let skill of analysisData.missingSkills" class="chip-warning">
+              <mat-icon matChipAvatar>priority_high</mat-icon> {{ skill }}
+            </mat-chip>
+          </mat-chip-set>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Relevant Experience -->
+    <mat-card *ngIf="analysisData.relevantExperience && analysisData.relevantExperience.length > 0" class="grid-card exp-card">
+      <mat-card-header>
+        <div class="card-icon-header accent">
+          <mat-icon>work_history</mat-icon>
+        </div>
+        <mat-card-title>Relevant Experience Mapped</mat-card-title>
+        <mat-card-subtitle>Projects & experience relevant to this role</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="exp-list">
+          <div *ngFor="let exp of analysisData.relevantExperience" class="exp-item">
+            <div class="exp-header">
+              <span class="exp-title">{{ exp.project }}</span>
+              <span class="relevance-tag" [ngClass]="'rel-' + exp.relevance.toLowerCase()">{{ exp.relevance }}</span>
+            </div>
+            <p class="exp-desc">{{ exp.description }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recommendations -->
+    <mat-card class="grid-card rec-card">
+      <mat-card-header>
+        <div class="card-icon-header purple">
+          <mat-icon>lightbulb</mat-icon>
+        </div>
+        <mat-card-title>AI Recommendations</mat-card-title>
+        <mat-card-subtitle>Actionable steps to improve your application</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="rec-list">
+          <div *ngFor="let rec of analysisData.recommendations; let i = index" class="rec-item">
+            <span class="rec-num">{{ i + 1 }}</span>
+            <p>{{ rec }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
