@@ -9,7 +9,16 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: config.clientUrl,
+  origin: (origin, callback) => {
+    const allowedOrigins = config.clientUrls;
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json());
