@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://al-project-server.vercel.app',
+  apiUrl: 'http://localhost:8500/api',
 
   // Allow larger file uploads
   maxFileSize: 20 * 1024 * 1024, // 20MB in bytes
