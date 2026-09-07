@@ -7,11 +7,13 @@ AI Career Assistant is a full-stack web application designed to help job seekers
 This application combines:
 
 - Frontend: Angular 17
-- Backend: Node.js + Express
+- Backend: Python + FastAPI
 - Styling: Angular Material + Bootstrap
-- Deployment: Vercel for frontend, external host for backend
+- Deployment: Vercel for frontend, Python-compatible host for backend
 
 The product is organized around a dashboard-first experience and multiple AI-powered career workflows.
+
+The backend is currently being migrated from the original Node.js/Express implementation to a Python FastAPI service under the python_server folder.
 
 ## Features
 
@@ -34,11 +36,13 @@ The product is organized around a dashboard-first experience and multiple AI-pow
 - Angular Router
 
 ### Backend
-- Node.js
-- Express
-- TypeScript
-- CORS
-- Environment-based configuration
+- Python 3.12+
+- FastAPI
+- Pydantic
+- Uvicorn
+- Python-dotenv
+- OpenAI integration
+- CORS middleware
 
 ## Project Structure
 
@@ -52,6 +56,12 @@ The product is organized around a dashboard-first experience and multiple AI-pow
 ├── server/
 │   ├── src/
 │   ├── package.json
+│   └── ...
+├── python_server/
+│   ├── app/
+│   ├── .venv/
+│   ├── requirements.txt
+│   ├── run.py
 │   └── ...
 ├── README.md
 └── .gitignore
@@ -72,7 +82,7 @@ All pages are wrapped within a shared layout shell containing a top toolbar and 
 
 ## Backend API Modules
 
-The Express API is mounted under /api and includes routes for:
+The FastAPI backend is mounted under /api and includes routes for:
 
 - /api/health
 - /api/dashboard
@@ -81,6 +91,8 @@ The Express API is mounted under /api and includes routes for:
 - /api/analysis
 - /api/interview
 - /api/agent
+
+The legacy Node.js backend remains in the server folder for reference, while the active migration is in python_server.
 
 ## Running the Application
 
@@ -92,7 +104,17 @@ npm install
 npm start
 ```
 
-### Backend
+### Python Backend
+
+```bash
+cd python_server
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python run.py
+```
+
+### Legacy Node.js Backend
 
 ```bash
 cd server
@@ -102,22 +124,24 @@ npm start
 
 ## Environment Variables
 
-The backend uses environment configuration for port and allowed frontend origins.
+The Python backend uses environment configuration for port and allowed frontend origins.
 
 Example:
 
 ```env
-PORT=8500
+PORT=8001
 NODE_ENV=development
-CLIENT_URL=http://localhost:4200,https://your-frontend.vercel.app
+CLIENT_URL=http://localhost:4200,http://localhost:8001,https://your-frontend.vercel.app
+OPENAI_API_KEY=your_key_here
 ```
 
 ## Deployment Notes
 
 - Frontend should be deployed on Vercel
-- Backend should be deployed on a Node-compatible hosting platform
+- Python backend should be deployed on a Python-compatible hosting platform such as Render, Railway, Fly.io, Azure, or a VPS
 - Ensure CORS origins include the deployed frontend URL
 - If using Angular SPA routes, configure Vercel rewrite rules to serve index.html
+- Local Python development runs on port 8001
 
 ## Current Status
 
@@ -125,6 +149,7 @@ This project is in active development and includes:
 
 - a working dashboard shell
 - modular page structure
+- FastAPI backend migration in progress
 - backend API scaffolding
 - AI assistant and career support features
 
