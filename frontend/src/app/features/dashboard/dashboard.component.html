@@ -1,68 +1,35 @@
-<div class="dashboard-page">
-  <!-- Welcome Header Banner -->
-  <div class="welcome-banner glass-panel">
+<div class="dashboard-page container-fluid px-0">
+  <div class="welcome-banner glass-panel d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 p-3 p-md-4 rounded-4 border">
     <div class="banner-text">
-      <h1>Hi, User 👋</h1>
-      <p>Your AI Career Assistant platform is active. Connect your resume and job specs for AI analysis.</p>
+      <h1 class="mb-1 fs-3 fw-bold">Hi, User 👋</h1>
+      <p class="mb-0 text-muted">Your AI Career Assistant platform is active. Connect your resume and job specs for AI analysis.</p>
     </div>
     <div class="banner-actions">
-      <button mat-raised-button color="primary" routerLink="/documents">
+      <button mat-raised-button color="primary" routerLink="/documents" class="w-100 w-md-auto">
         <mat-icon>cloud_upload</mat-icon> Upload Resume
       </button>
     </div>
   </div>
 
-  <!-- Quick Stats Cards Grid -->
-  <div class="stats-grid">
-    <mat-card class="stat-card">
-      <mat-card-content class="stat-content">
-        <div class="stat-icon-wrapper bg-indigo">
-          <mat-icon class="stat-icon">description</mat-icon>
-        </div>
-        <div class="stat-details">
-          <span class="stat-value">{{ dashboardData?.stats?.resumesUploaded || 0 }}</span>
-          <span class="stat-label">Resumes Indexed</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content class="stat-content">
-        <div class="stat-icon-wrapper bg-cyan">
-          <mat-icon class="stat-icon">work_outline</mat-icon>
-        </div>
-        <div class="stat-details">
-          <span class="stat-value">{{ dashboardData?.stats?.jobDescriptionsUploaded || 0 }}</span>
-          <span class="stat-label">Job Descriptions</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card highlight-ats-card">
-      <mat-card-content class="stat-content">
-        <div class="stat-icon-wrapper bg-emerald">
-          <mat-icon class="stat-icon">fact_check</mat-icon>
-        </div>
-        <div class="stat-details">
-          <span class="stat-value text-emerald">
-            {{ atsData?.overallAtsScore !== undefined ? atsData?.overallAtsScore + '%' : 'Scan Ready' }}
-          </span>
-          <span class="stat-label">ATS Compliance Score</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content class="stat-content">
-        <div class="stat-icon-wrapper bg-purple">
-          <mat-icon class="stat-icon">record_voice_over</mat-icon>
-        </div>
-        <div class="stat-details">
-          <span class="stat-value">{{ dashboardData?.stats?.interviewSessions || 0 }}</span>
-          <span class="stat-label">Mock Interviews</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <div class="row g-3 mt-1">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let card of [
+      { icon: 'description', color: 'bg-indigo', value: dashboardData?.stats?.resumesUploaded || 0, label: 'Resumes Indexed' },
+      { icon: 'work_outline', color: 'bg-cyan', value: dashboardData?.stats?.jobDescriptionsUploaded || 0, label: 'Job Descriptions' },
+      { icon: 'fact_check', color: 'bg-emerald', value: atsData?.overallAtsScore !== undefined ? atsData?.overallAtsScore + '%' : 'Scan Ready', label: 'ATS Compliance Score', accent: true },
+      { icon: 'record_voice_over', color: 'bg-purple', value: dashboardData?.stats?.interviewSessions || 0, label: 'Mock Interviews' }
+    ]">
+      <mat-card class="stat-card h-100">
+        <mat-card-content class="stat-content d-flex align-items-center gap-3 p-3">
+          <div class="stat-icon-wrapper {{ card.color }} d-flex align-items-center justify-content-center">
+            <mat-icon class="stat-icon">{{ card.icon }}</mat-icon>
+          </div>
+          <div class="stat-details d-flex flex-column">
+            <span class="stat-value" [class.text-emerald]="card.accent">{{ card.value }}</span>
+            <span class="stat-label">{{ card.label }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 
   <!-- 🎯 ATS Score Checker Widget -->

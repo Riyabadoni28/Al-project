@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -30,11 +30,33 @@ import { HealthResponse } from '../../../core/models/dashboard.model';
 })
 export class LayoutComponent implements OnInit {
   isBackendOnline = false;
+  isSidebarOpen = true;
+  isMobile = false;
 
   constructor(private healthService: HealthService) {}
 
   ngOnInit(): void {
     this.checkBackendHealth();
+    this.updateViewportState();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.updateViewportState();
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  private updateViewportState(): void {
+    this.isMobile = window.innerWidth < 768;
+
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
+    } else {
+      this.isSidebarOpen = true;
+    }
   }
 
   checkBackendHealth(): void {

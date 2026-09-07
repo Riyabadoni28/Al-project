@@ -1,99 +1,61 @@
 .dashboard-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
-.welcome-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
+.glass-panel {
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid #e2e8f0;
-  background: #fff;
-
-  h1 {
-    margin-bottom: 4px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #64748b;
-  }
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
 }
 
 .stat-card {
-  border: 1px solid #f1f5f9;
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid #eef2ff;
+}
 
-  .stat-content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px !important;
+.stat-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrapper .stat-icon {
+  color: white;
+}
+
+.bg-indigo { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+.bg-cyan { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+.bg-emerald { background: linear-gradient(135deg, #059669, #10b981); }
+.bg-purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.text-emerald {
+  color: #059669;
+}
+
+@media (max-width: 767.98px) {
+  .dashboard-page {
+    gap: 1rem;
   }
 
-  .stat-icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-
-    .stat-icon {
-      color: #fff;
-    }
-
-    &.bg-indigo {
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-    }
-
-    &.bg-cyan {
-      background: linear-gradient(135deg, #0891b2, #06b6d4);
-    }
-
-    &.bg-emerald {
-      background: linear-gradient(135deg, #059669, #10b981);
-    }
-
-    &.bg-purple {
-      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-    }
+  .welcome-banner {
+    padding: 1rem;
   }
 
-  .stat-details {
-    display: flex;
-    flex-direction: column;
-
-    .stat-value {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #64748b;
-    }
-
-    .text-emerald {
-      color: #059669;
-    }
+  .stat-value {
+    font-size: 1.2rem;
   }
 }
 
@@ -136,6 +98,7 @@
   background: #fefce8;
   border: 1px solid #fef08a;
   border-radius: 12px;
+  margin-bottom: 16px;
 
   .warn-icon {
     width: 36px;
@@ -530,5 +493,103 @@
   .refresh-btn {
     width: 100%;
     margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    gap: 16px;
+  }
+
+  .welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px 16px;
+
+    h1 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.82rem;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ats-checker-card mat-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ats-empty-state {
+    flex-wrap: wrap;
+    align-items: flex-start;
+
+    button {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 8px;
+    }
+  }
+
+  .ats-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .phase-item {
+    align-items: flex-start;
+    padding: 10px;
+
+    .phase-number {
+      align-self: center;
+    }
+  }
+
+  .metrics-list .metric-row {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-card .stat-content {
+    padding: 14px !important;
+  }
+
+  .stat-details .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .ats-gauge {
+    width: 92px;
+    height: 92px;
+  }
+
+  .ats-gauge .gauge-center {
+    width: 68px;
+    height: 68px;
+  }
+
+  .ats-checks-list,
+  .ats-subscores {
+    padding: 12px;
+  }
+
+  .check-item {
+    padding: 10px 8px;
+  }
+
+  .cap-item {
+    font-size: 0.74rem;
   }
 }
