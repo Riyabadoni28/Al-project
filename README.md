@@ -162,6 +162,49 @@ The following enhancements are planned to evolve the product from a dashboard pr
   - Add relational data models for job roles and user activity
   - Support analytics and reporting dashboards
 
+## Implementation Roadmap
+
+The product should be delivered in a staged approach so that the foundation is production-ready before adding advanced AI and data features.
+
+### Phase 1: Foundation and user management
+- Implement authentication with signup/login for candidates
+- Add user profiles, session persistence, and saved preferences
+- Introduce role-based access for users and admins
+- Create secure session handling and protected routes
+- Add backend user and auth models
+
+### Phase 2: Resume intelligence and document pipeline
+- Support PDF and DOCX upload with validation
+- Extract skills, experience, education, and keywords from uploaded documents
+- Store user files in secure cloud storage
+- Build resume parsing and enrichment logic
+- Add document history and retrieval for future analysis
+
+### Phase 3: AI analysis and recommendation engine
+- Connect to a production LLM provider for structured evaluation
+- Add prompt templates for resume scoring, skill matching, and interview coaching
+- Implement streaming responses for chat and analysis workflows
+- Add job-role matching and fit-score ranking
+- Recommend skill gaps and next-step actions for candidates
+
+### Phase 4: Interview and evaluation system
+- Add interview recording, transcript generation, and speech-to-text processing
+- Evaluate communication, confidence, clarity, and answer quality
+- Save interview summaries and coaching insights for users
+- Integrate review dashboards for candidate improvement
+
+### Phase 5: Data layer and analytics
+- Add cloud database integration for users, resumes, chat history, and evaluations
+- Create relational models for job roles, skills, applications, and activity logs
+- Enable analytics dashboards and reporting for performance trends
+- Prepare the app for scaling, backups, and operational monitoring
+
+### Phase 6: Production hardening
+- Add API security, rate limiting, and input validation
+- Improve error handling, logging, and observability
+- Optimize deployment, environment management, and CI/CD pipelines
+- Validate accessibility, mobile responsiveness, and performance on release builds
+
 ## License
 
 This project is for educational and personal project use unless otherwise specified.
