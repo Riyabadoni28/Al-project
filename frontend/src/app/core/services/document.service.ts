@@ -35,18 +35,23 @@ export class DocumentService {
 
   uploadResume(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('resume', file);
+    formData.append('file', file);
     return this.apiService.post('/documents/upload-resume', formData);
   }
 
   uploadJobDescriptionFile(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('jobDescription', file);
+    formData.append('file', file);
     return this.apiService.post('/documents/upload-jd', formData);
   }
 
   uploadJobDescriptionText(text: string, title?: string): Observable<any> {
-    return this.apiService.post('/documents/upload-jd', { text, title });
+    const formData = new FormData();
+    formData.append('text', text);
+    if (title) {
+      formData.append('title', title);
+    }
+    return this.apiService.post('/documents/upload-jd/text', formData);
   }
 
   deleteDocument(type: 'resume' | 'job_description'): Observable<any> {

@@ -1,4 +1,5 @@
 import re
+from io import BytesIO
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
@@ -86,7 +87,7 @@ class DocumentService:
 
     def parse_pdf_buffer(self, buffer: bytes, filename: str, doc_type: str) -> DocumentMeta:
         try:
-            reader = PdfReader(buffer)
+            reader = PdfReader(BytesIO(buffer))
             text_parts: List[str] = []
             for page in reader.pages:
                 text = page.extract_text() or ""

@@ -24,4 +24,8 @@ export class AnalysisService {
   getFitAnalysis(): Observable<{ status: string; data: JobFitData }> {
     return this.apiService.get('/analysis/fit');
   }
+
+  getAtsScore(): Observable<{ status: string; data: any }> {
+    return this.apiService.get('/analysis/ats');
+  }
 }

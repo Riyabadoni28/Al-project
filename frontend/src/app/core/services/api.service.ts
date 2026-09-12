@@ -16,6 +16,10 @@ export class ApiService {
   }
 
   post<T>(path: string, body: any): Observable<T> {
+    // For FormData, don't set Content-Type header - let the browser set it automatically with boundary
+    if (body instanceof FormData) {
+      return this.http.post<T>(`${this.baseUrl}${path}`, body);
+    }
     return this.http.post<T>(`${this.baseUrl}${path}`, body);
   }
 

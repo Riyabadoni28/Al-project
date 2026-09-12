@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.services.agent_service import agent_service
+
 router = APIRouter(prefix="/agent", tags=["agent"])
 
 
@@ -23,18 +25,30 @@ class AnswerBody(BaseModel):
 
 @router.post("/optimize-bullet")
 def optimize_bullet(body: BulletBody):
-    if not body.originalBullet or not body.originalBullet.strip():
-        raise HTTPException(status_code=400, detail="originalBullet is required")
-    return {"status": "success", "data": {"optimizedBullet": body.originalBullet.strip(), "targetRole": body.targetRole or "General Role"}}
+    try:
+        result = agent_service.optimize_resume_bullet(body.originalBullet, body.targetRole)
+        return {"status": "success", "data": result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to optimize bullet: {str(e)}")
 
 
 @router.post("/cover-letter")
 def generate_cover_letter(body: CoverLetterBody):
-    return {"status": "success", "data": {"coverLetter": "This is a starter cover letter template for the selected role.", "companyName": body.companyName, "jobTitle": body.jobTitle, "tone": body.tone}}
+    try:
+        result = agent_service.generate_cover_letter(body.companyName, body.jobTitle, body.tone)
+        return {"status": "success", "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate cover letter: {str(e)}")
 
 
 @router.post("/evaluate-answer")
 def evaluate_answer(body: AnswerBody):
-    if not body.question or not body.userAnswer:
-        raise HTTPException(status_code=400, detail="question and userAnswer are required")
-    return {"status": "success", "data": {"score": 88, "feedback": "Strong answer structure with room to improve specificity and measurable impact.", "suggestedAnswer": body.suggestedAnswer or body.userAnswer}}
+    try:
+        result = agent_service.evaluate_interview_answer(body.question, body.userAnswer, body.suggestedAnswer)
+        return {"status": "success", "data": result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to evaluate answer: {str(e)}")

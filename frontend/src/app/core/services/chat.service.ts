@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
+import { environment } from '../../../environments/environment';
 
 export interface ChatSource {
   document: string;
@@ -18,7 +19,7 @@ export interface ChatResponseMessage {
   providedIn: 'root',
 })
 export class ChatService {
-  private streamUrl = 'http://localhost:8500/api/chat/stream';
+  private streamUrl = `${environment.apiUrl}/chat/stream`;
 
   constructor(private apiService: ApiService) {}
 
