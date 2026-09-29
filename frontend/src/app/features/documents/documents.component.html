@@ -1,7 +1,7 @@
 <div class="documents-page">
   <div class="page-header">
     <h1>Document Management</h1>
-    <p>Upload your Resume (PDF) and Job Description to enable AI career analysis & RAG.</p>
+    <p>Upload your Resume and Job Description to enable AI career analysis & RAG.</p>
   </div>
 
   <div class="upload-grid">
@@ -9,12 +9,12 @@
     <mat-card class="upload-card">
       <mat-card-header>
         <mat-icon color="primary" class="header-icon">badge</mat-icon>
-        <mat-card-title>1. Upload Resume (PDF)</mat-card-title>
+        <mat-card-title>1. Upload Resume</mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
         <div *ngIf="isUploadingResume" class="progress-box">
-          <p>Parsing PDF & Extracting Text...</p>
+          <p>Extracting document text...</p>
           <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         </div>
 
@@ -25,12 +25,12 @@
           (click)="resumeFileInput.click()"
         >
           <mat-icon class="drop-icon">cloud_upload</mat-icon>
-          <h3>Click or Drag & Drop Resume PDF</h3>
-          <p class="drop-hint">Supports PDF files up to 10MB</p>
+          <h3>Click or Drag & Drop Resume</h3>
+          <p class="drop-hint">Supports PDF and Word files up to 20MB</p>
           <input
             #resumeFileInput
             type="file"
-            accept="application/pdf"
+            accept=".pdf,.docx"
             (change)="onResumeFileSelected($event)"
             style="display: none;"
           />
@@ -75,12 +75,12 @@
           <mat-tab label="Upload PDF">
             <div class="dropzone tab-dropzone" (click)="jdFileInput.click()">
               <mat-icon class="drop-icon accent-icon">picture_as_pdf</mat-icon>
-              <h3>Click to Upload Job Description PDF</h3>
-              <p class="drop-hint">Supports PDF up to 10MB</p>
+              <h3>Click to Upload Job Description</h3>
+              <p class="drop-hint">Supports PDF and Word files up to 20MB</p>
               <input
                 #jdFileInput
                 type="file"
-                accept="application/pdf"
+                accept=".pdf,.docx"
                 (change)="onJdFileSelected($event)"
                 style="display: none;"
               />

@@ -6,6 +6,11 @@ from app.services.document_service import document_service
 router = APIRouter(prefix="/documents", tags=["documents"])
 logger = logging.getLogger(__name__)
 
+SUPPORTED_DOCUMENT_TYPES = {
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
+
 
 @router.get("/status")
 def get_document_status():
@@ -20,8 +25,8 @@ async def upload_resume(file: UploadFile = File(...)):
         if not file:
             raise HTTPException(status_code=400, detail="No file provided in request.")
         
-        if file.content_type != "application/pdf":
-            raise HTTPException(status_code=400, detail=f"Only PDF documents are allowed for Resume. Received: {file.content_type}")
+        if file.content_type not in SUPPORTED_DOCUMENT_TYPES:
+            raise HTTPException(status_code=400, detail=f"Only PDF or Word documents are allowed for Resume. Received: {file.content_type}")
 
         buffer = await file.read()
         
@@ -31,10 +36,12 @@ async def upload_resume(file: UploadFile = File(...)):
         logger.info(f"PDF buffer size: {len(buffer)} bytes")
         
         try:
-            doc = document_service.parse_pdf_buffer(buffer, file.filename or "resume.pdf", "resume")
+            doc = document_service.parse_document_buffer(
+                buffer, file.filename or "resume.pdf", "resume", file.content_type
+            )
         except ValueError as e:
             logger.error(f"PDF parsing error: {str(e)}")
-            raise HTTPException(status_code=400, detail=f"Failed to parse PDF: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Failed to parse document: {str(e)}")
         
         logger.info(f"Resume uploaded successfully: {doc.id}, extracted {doc.char_count} characters")
         
@@ -64,8 +71,8 @@ async def upload_job_description_file(file: UploadFile = File(...)):
     try:
         logger.info(f"Upload JD file request: filename={file.filename}, content_type={file.content_type}")
         
-        if file.content_type != "application/pdf":
-            raise HTTPException(status_code=400, detail=f"Uploaded file must be a PDF. Received: {file.content_type}")
+        if file.content_type not in SUPPORTED_DOCUMENT_TYPES:
+            raise HTTPException(status_code=400, detail=f"Uploaded file must be a PDF or Word document. Received: {file.content_type}")
         
         buffer = await file.read()
         
@@ -75,10 +82,12 @@ async def upload_job_description_file(file: UploadFile = File(...)):
         logger.info(f"PDF buffer size: {len(buffer)} bytes")
         
         try:
-            doc = document_service.parse_pdf_buffer(buffer, file.filename or "job_description.pdf", "job_description")
+            doc = document_service.parse_document_buffer(
+                buffer, file.filename or "job_description.pdf", "job_description", file.content_type
+            )
         except ValueError as e:
             logger.error(f"PDF parsing error: {str(e)}")
-            raise HTTPException(status_code=400, detail=f"Failed to parse PDF: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Failed to parse document: {str(e)}")
         
         logger.info(f"Job Description uploaded successfully: {doc.id}, extracted {doc.char_count} characters")
         

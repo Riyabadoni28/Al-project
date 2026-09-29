@@ -45,6 +45,29 @@
 
 .questions-list { display: flex; flex-direction: column; gap: 16px; }
 
+.empty-state {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(180px, 0.7fr);
+  align-items: center; gap: 24px; padding: 28px;
+  background: linear-gradient(135deg, #eef2ff, #f8fafc 58%, #ecfdf5);
+  border: 1px solid #c7d2fe; border-radius: 16px;
+  .empty-icon {
+    width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;
+    border-radius: 16px; background: #4f46e5; color: #fff;
+    mat-icon { font-size: 32px; width: 32px; height: 32px; }
+  }
+  .empty-copy {
+    .empty-eyebrow { color: #4f46e5; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
+    h2 { color: #0f172a; font-size: 1.15rem; margin: 4px 0 6px; }
+    p { color: #475569; font-size: 0.85rem; line-height: 1.55; margin: 0 0 14px; }
+    button { border-radius: 8px; }
+  }
+  .empty-checklist {
+    display: flex; flex-direction: column; gap: 10px;
+    div { display: flex; align-items: center; gap: 8px; color: #334155; font-size: 0.8rem; font-weight: 600; }
+    mat-icon { color: #059669; font-size: 18px; width: 18px; height: 18px; }
+  }
+}
+
 .question-card {
   border-radius: 16px; border: 1px solid #e2e8f0;
   transition: all 0.2s ease;
@@ -114,3 +137,8 @@
 .action-btns { display: flex; gap: 8px; }
 .btn-practice { color: #059669 !important; border-color: #10b981 !important; font-size: 0.8rem; border-radius: 8px; }
 .btn-unpractice { color: #64748b !important; border-color: #cbd5e1 !important; font-size: 0.8rem; border-radius: 8px; }
+
+@media (max-width: 720px) {
+  .empty-state { grid-template-columns: auto 1fr; padding: 20px; }
+  .empty-checklist { grid-column: 1 / -1; }
+}

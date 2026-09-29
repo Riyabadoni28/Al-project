@@ -316,7 +316,40 @@ class LLMService:
         resume = document_service.get_resume()
         jd = document_service.get_job_description()
         if not resume and not jd:
-            return []
+            return [
+                {
+                    "id": "starter-1",
+                    "category": "Behavioral",
+                    "difficulty": "Easy",
+                    "question": "Tell me about yourself and the kind of role you are looking for.",
+                    "suggestedAnswer": "Give a concise present-past-future summary: your current strengths, one or two relevant experiences, and why this role is the next step.",
+                    "keyPoints": ["Clarity", "Relevance", "Career direction"],
+                },
+                {
+                    "id": "starter-2",
+                    "category": "Behavioral",
+                    "difficulty": "Medium",
+                    "question": "Describe a challenging problem you solved and how you approached it.",
+                    "suggestedAnswer": "Use STAR: explain the situation, your responsibility, the actions you took, and the measurable result.",
+                    "keyPoints": ["STAR structure", "Ownership", "Outcome"],
+                },
+                {
+                    "id": "starter-3",
+                    "category": "Technical",
+                    "difficulty": "Medium",
+                    "question": "How do you investigate a feature that is slow or unreliable in production?",
+                    "suggestedAnswer": "Start with observable evidence such as logs, metrics, traces, and reproduction steps, then isolate the bottleneck, make the smallest safe fix, and verify the result.",
+                    "keyPoints": ["Diagnosis", "Trade-offs", "Verification"],
+                },
+                {
+                    "id": "starter-4",
+                    "category": "Behavioral",
+                    "difficulty": "Hard",
+                    "question": "Tell me about a time you received difficult feedback and what you changed afterward.",
+                    "suggestedAnswer": "Focus on the specific feedback, how you responded without becoming defensive, the behavior you changed, and the effect of that change.",
+                    "keyPoints": ["Self-awareness", "Adaptability", "Growth"],
+                },
+            ]
 
         # Conservative, non-fabricating defaults that reference uploaded content
         return [

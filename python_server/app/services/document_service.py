@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 from pypdf import PdfReader
+from docx import Document
 
 
 class DocumentChunk:
@@ -86,14 +87,35 @@ class DocumentService:
         return "".join(context_parts)
 
     def parse_pdf_buffer(self, buffer: bytes, filename: str, doc_type: str) -> DocumentMeta:
+        return self.parse_document_buffer(buffer, filename, doc_type, "application/pdf")
+
+    def parse_document_buffer(
+        self, buffer: bytes, filename: str, doc_type: str, content_type: str
+    ) -> DocumentMeta:
         try:
-            reader = PdfReader(BytesIO(buffer))
-            text_parts: List[str] = []
-            for page in reader.pages:
-                text = page.extract_text() or ""
-                text_parts.append(text)
-            extracted = "\n".join(text_parts).strip()
-            doc = DocumentMeta(doc_type, filename, len(buffer), extracted, len(reader.pages), __import__("datetime").datetime.utcnow().isoformat())
+            if content_type == "application/pdf":
+                reader = PdfReader(BytesIO(buffer))
+                text_parts = [(page.extract_text() or "") for page in reader.pages]
+                extracted = "\n".join(text_parts).strip()
+                page_count = len(reader.pages)
+            elif content_type in {
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            }:
+                document = Document(BytesIO(buffer))
+                paragraphs = [paragraph.text for paragraph in document.paragraphs if paragraph.text.strip()]
+                table_text = [
+                    "\n".join(cell.text for row in table.rows for cell in row.cells)
+                    for table in document.tables
+                ]
+                extracted = "\n".join(paragraphs + table_text).strip()
+                page_count = 1
+            else:
+                raise ValueError("Unsupported document type")
+
+            if not extracted:
+                raise ValueError("No readable text was found in the document")
+
+            doc = DocumentMeta(doc_type, filename, len(buffer), extracted, page_count, __import__("datetime").datetime.utcnow().isoformat())
             if doc_type == "resume":
                 self.active_resume = doc
             else:

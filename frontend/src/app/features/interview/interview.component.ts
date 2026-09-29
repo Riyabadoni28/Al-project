@@ -8,6 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router';
 import { InterviewService, InterviewQuestion } from '../../core/services/interview.service';
 
 interface RatedQuestion extends InterviewQuestion {
@@ -29,6 +30,7 @@ interface RatedQuestion extends InterviewQuestion {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatSnackBarModule,
+    RouterModule,
   ],
   templateUrl: './interview.component.html',
   styleUrl: './interview.component.scss',

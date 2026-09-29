@@ -103,6 +103,7 @@ export class ChatComponent implements OnDestroy, AfterViewChecked {
 
     const history = this.messages
       .filter((m) => !m.streaming)
+      .slice(0, -1)
       .map((m) => ({
         role: m.sender === 'user' ? ('user' as const) : ('assistant' as const),
         content: m.text,

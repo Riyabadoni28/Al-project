@@ -42,6 +42,23 @@
 
   <!-- Questions List -->
   <div class="questions-list" *ngIf="!isLoading">
+    <section *ngIf="questions.length === 0" class="empty-state">
+      <div class="empty-icon"><mat-icon>psychology</mat-icon></div>
+      <div class="empty-copy">
+        <span class="empty-eyebrow">Interview workspace</span>
+        <h2>Your practice set is ready to build</h2>
+        <p>Upload a resume and job description for targeted questions, or start with the general interview practice set.</p>
+        <button mat-raised-button color="primary" routerLink="/documents">
+          <mat-icon>upload_file</mat-icon>
+          Add documents
+        </button>
+      </div>
+      <div class="empty-checklist">
+        <div><mat-icon>check_circle</mat-icon><span>Behavioral practice</span></div>
+        <div><mat-icon>check_circle</mat-icon><span>Technical scenarios</span></div>
+        <div><mat-icon>check_circle</mat-icon><span>Self-rating progress</span></div>
+      </div>
+    </section>
     <mat-card
       *ngFor="let q of questions; let i = index"
       class="question-card"

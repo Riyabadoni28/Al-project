@@ -56,8 +56,8 @@ export class DocumentsComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
-      this.snackBar.open('Please select a valid PDF file.', 'Close', { duration: 4000 });
+    if (!this.isSupportedDocument(file)) {
+      this.snackBar.open('Please select a PDF or Word document.', 'Close', { duration: 4000 });
       return;
     }
 
@@ -78,6 +78,11 @@ export class DocumentsComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
+    if (!this.isSupportedDocument(file)) {
+      this.snackBar.open('Please select a PDF or Word document.', 'Close', { duration: 4000 });
+      return;
+    }
+
     this.isUploadingJd = true;
     this.documentService.uploadJobDescriptionFile(file).subscribe({
       next: () => {
@@ -89,6 +94,10 @@ export class DocumentsComponent implements OnInit {
         this.isUploadingJd = false;
       },
     });
+  }
+
+  private isSupportedDocument(file: File): boolean {
+    return ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type);
   }
 
   submitPlainTextJd(): void {
